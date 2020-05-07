@@ -37,12 +37,43 @@ BufferPoolManager::~BufferPoolManager() {
 Page *BufferPoolManager::FetchPageImpl(page_id_t page_id) {
   // 1.     Search the page table for the requested page (P).
   // 1.1    If P exists, pin it and return it immediately.
+  for (size_t i = 0; i < pool_size_; i++) {
+    if (pages_[i].page_id_ == page_id) {
+      replacer_->Pin(i);
+      return &pages_[i];
+    }
+  }
+
   // 1.2    If P does not exist, find a replacement page (R) from either the free list or the replacer.
   //        Note that pages are always found from the free list first.
+  frame_id_t replacementPageFrameId;
+  Page *replacementPage;
+  if (free_list_.size() != 0) {
+    replacementPageFrameId = free_list_.front();
+    free_list_.pop_front();
+    replacementPage = &pages_[replacementPageFrameId];
+  }
+
+  // find a replacement page (R) from  the replacer.
+  else {
+    replacer_->Victim(&replacementPageFrameId);
+    replacementPage = &pages_[replacementPageFrameId];
+  }
+
+  if (replacementPage == nullptr) {
+    return nullptr;
+  }
+
   // 2.     If R is dirty, write it back to the disk.
+  if (replacementPage->IsDirty()) {
+    disk_manager_->WritePage(replacementPageFrameId, replacementPage->GetData());
+  }
   // 3.     Delete R from the page table and insert P.
   // 4.     Update P's metadata, read in the page content from disk, and then return a pointer to P.
-  return nullptr;
+  replacementPage->page_id_ = page_id;
+  replacementPage->is_dirty_ = false;
+  disk_manager_->ReadPage(page_id, replacementPage->data_);
+  return replacementPage;
 }
 
 bool BufferPoolManager::UnpinPageImpl(page_id_t page_id, bool is_dirty) { return false; }
