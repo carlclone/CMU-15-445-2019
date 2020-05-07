@@ -19,7 +19,7 @@
 
 namespace bustub {
 
-TEST(ClockReplacerTest, SampleTest) {
+TEST(ClockReplacerTest, DISABLED_SampleTest) {
   ClockReplacer clock_replacer(7);
 
   // Scenario: unpin six elements, i.e. add them to the replacer.
