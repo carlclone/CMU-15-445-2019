@@ -16,7 +16,7 @@ namespace bustub {
 
 ClockReplacer::ClockReplacer(size_t num_pages) {
   //钟表指针
-  clockHand = 0;
+  clockHand = -1;
   pageSize = num_pages;
   inClock = std::vector<bool>(num_pages, 0);
   refFlag = std::vector<bool>(num_pages, 0);
@@ -33,14 +33,13 @@ ClockReplacer::~ClockReplacer() = default;
 // This should be the only method that updates the clock hand.
 bool ClockReplacer::Victim(frame_id_t *frame_id) {
   //从当前 clockhand 开始 sweep 2周
-  for (int i = 0; i <= 2*pageSize; i++) {
+  for (int i = 0; i <= pageSize+1; i++) {
+    forwardClockHand();
     if (!inClock[clockHand]) {
-      forwardClockHand();
       continue;
     }
     if (refFlag[clockHand] == true) {
       refFlag[clockHand] = false;
-      forwardClockHand();
       continue;
       //      forwardClockHand();
     }
@@ -48,10 +47,9 @@ bool ClockReplacer::Victim(frame_id_t *frame_id) {
       *frame_id = clockHand;
       inClock[clockHand] = false;
       refFlag[clockHand] = false;
-      forwardClockHand();
       return true;
     }
-    forwardClockHand();
+
   }
   return false;
 }

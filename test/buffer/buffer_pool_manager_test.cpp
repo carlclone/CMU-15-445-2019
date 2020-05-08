@@ -11,8 +11,12 @@
 //===----------------------------------------------------------------------===//
 
 #include "buffer/buffer_pool_manager.h"
+
+#include <include/common/logger.h>
+
 #include <cstdio>
 #include <string>
+
 #include "gtest/gtest.h"
 
 namespace bustub {
