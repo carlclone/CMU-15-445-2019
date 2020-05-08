@@ -32,7 +32,8 @@ ClockReplacer::~ClockReplacer() = default;
 // If a frame is in the `ClockReplacer`, but its ref flag is set to true, change it to false instead.
 // This should be the only method that updates the clock hand.
 bool ClockReplacer::Victim(frame_id_t *frame_id) {
-  while (1) {
+  //从当前 clockhand 开始 sweep 2周
+  for (int i = 0; i <= 2*pageSize; i++) {
     if (!inClock[clockHand]) {
       forwardClockHand();
       continue;
@@ -41,47 +42,41 @@ bool ClockReplacer::Victim(frame_id_t *frame_id) {
       refFlag[clockHand] = false;
       forwardClockHand();
       continue;
-//      forwardClockHand();
+      //      forwardClockHand();
     }
     if (refFlag[clockHand] == false) {
       *frame_id = clockHand;
-      inClock[clockHand]=false;
-      refFlag[clockHand]=false;
+      inClock[clockHand] = false;
+      refFlag[clockHand] = false;
       forwardClockHand();
       return true;
-      break;
     }
-
     forwardClockHand();
   }
+  return false;
 }
 
-
-
-
-//This method should be called after a page is pinned to a frame in the BufferPoolManager.
+// This method should be called after a page is pinned to a frame in the BufferPoolManager.
 // It should remove the frame containing the pinned page from the ClockReplacer.
 void ClockReplacer::Pin(frame_id_t frame_id) {
-  inClock[frame_id]= false;
-  refFlag[frame_id]=false;
+  inClock[frame_id] = false;
+  refFlag[frame_id] = false;
 }
 
 void ClockReplacer::Unpin(frame_id_t frame_id) {
-  inClock[frame_id]= true;
-  refFlag[frame_id]= true;
+  inClock[frame_id] = true;
+  refFlag[frame_id] = true;
 }
 
 size_t ClockReplacer::Size() {
-  size_t size=0;
-  for (int i=0;i<pageSize;i++) {
+  size_t size = 0;
+  for (int i = 0; i < pageSize; i++) {
     if (inClock[i]) {
       size++;
     }
   }
   return size;
 }
-void ClockReplacer::forwardClockHand() {
-  clockHand = (clockHand+1)%pageSize;
-}
+void ClockReplacer::forwardClockHand() { clockHand = (clockHand + 1) % pageSize; }
 
 }  // namespace bustub

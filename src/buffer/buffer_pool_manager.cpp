@@ -12,6 +12,8 @@
 
 #include "buffer/buffer_pool_manager.h"
 
+#include <include/common/logger.h>
+
 #include <list>
 #include <unordered_map>
 
@@ -60,6 +62,8 @@ Page *BufferPoolManager::FetchPageImpl(page_id_t page_id) {
     replacementPage = &pages_[replacementPageFrameId];
   }
 
+  // For FetchPageImpl,you should return NULL if no page is available in the free list
+  // and all other pages are currently pinned.
   if (replacementPage == nullptr) {
     return nullptr;
   }
@@ -76,20 +80,68 @@ Page *BufferPoolManager::FetchPageImpl(page_id_t page_id) {
   return replacementPage;
 }
 
-bool BufferPoolManager::UnpinPageImpl(page_id_t page_id, bool is_dirty) { return false; }
+/**
+ * Unpin the target page from the buffer pool.
+ * @param page_id id of page to be unpinned
+ * @param is_dirty true if the page should be marked as dirty, false otherwise
+ * @return false if the page pin count is <= 0 before this call, true otherwise
+ */
+bool BufferPoolManager::UnpinPageImpl(page_id_t page_id, bool is_dirty) {
+
+
+  return false;
+}
 
 bool BufferPoolManager::FlushPageImpl(page_id_t page_id) {
   // Make sure you call DiskManager::WritePage!
   return false;
 }
 
+//在 buffer pool 里分配一块内存给新的 page , 要和磁盘上的page一一对应
+
+// 0.   Make sure you call DiskManager::AllocatePage!
+// 1.   If all the pages in the buffer pool are pinned, return nullptr.
+// 2.   Pick a victim page P from either the free list or the replacer. Always pick from the free list first.
+// 3.   Update P's metadata, zero out memory and add P to the page table.
+// 4.   Set the page ID output parameter. Return a pointer to P.
 Page *BufferPoolManager::NewPageImpl(page_id_t *page_id) {
-  // 0.   Make sure you call DiskManager::AllocatePage!
-  // 1.   If all the pages in the buffer pool are pinned, return nullptr.
-  // 2.   Pick a victim page P from either the free list or the replacer. Always pick from the free list first.
-  // 3.   Update P's metadata, zero out memory and add P to the page table.
-  // 4.   Set the page ID output parameter. Return a pointer to P.
-  return nullptr;
+
+  //如果bufferpool 里的 page 都 pinned 了, return nullprt
+  //遍历 pages , 检查 pin count
+  frame_id_t replacementPageFrameId;
+  Page *replacementPage;
+
+  //从freelist或者replacer里找一个可用的frame
+  if (free_list_.size() != 0) {
+    replacementPageFrameId = free_list_.front();
+    free_list_.pop_front();
+    replacementPage = &pages_[replacementPageFrameId];
+  }
+
+    // find a replacement page (R) from  the replacer.
+  else {
+    auto result=replacer_->Victim(&replacementPageFrameId);
+    //一个空闲frame都找不到了
+    if (result==false) {
+      return nullptr;
+    }
+    replacementPage = &pages_[replacementPageFrameId];
+  }
+
+  //在磁盘中allocate一个page,获得page id
+  page_id_t newPageId = disk_manager_->AllocatePage();
+
+  //更新 bufferpool 里 frame 的 page 信息
+  replacementPage->ResetMemory(); //清空原 frame 里的数据,避免污染
+  replacementPage->page_id_ = newPageId;
+  replacementPage->is_dirty_=true; //新数据, 空的 page 也要flush
+  replacementPage->pin_count_=1; //
+
+  //track page->frame的映射
+
+  //返回响应
+  *page_id = newPageId;
+  return replacementPage;
 }
 
 bool BufferPoolManager::DeletePageImpl(page_id_t page_id) {
