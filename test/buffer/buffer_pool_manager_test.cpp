@@ -32,6 +32,7 @@ TEST(BufferPoolManagerTest, BinaryDataTest) {
 
   page_id_t page_id_temp;
   //在 bufferpool 里创建 page
+LOG_INFO("---------1----------");
   auto *page0 = bpm->NewPage(&page_id_temp);
 
   // Scenario: The buffer pool is empty. We should be able to create a new page.
@@ -58,21 +59,23 @@ TEST(BufferPoolManagerTest, BinaryDataTest) {
 
   // Scenario: We should be able to create new pages until we fill up the buffer pool.
   //继续创建 page , 直到 bufferpool 被 page 充满
+LOG_INFO("---------2----------");
   for (size_t i = 1; i < buffer_pool_size; ++i) {
     EXPECT_NE(nullptr, bpm->NewPage(&page_id_temp));
   }
 
   // Scenario: Once the buffer pool is full, we should not be able to create any new pages.
   //不能再继续创建了,返回 nullptr
+LOG_INFO("---------3----------");
   for (size_t i = buffer_pool_size; i < buffer_pool_size * 2; ++i) {
     EXPECT_EQ(nullptr, bpm->NewPage(&page_id_temp));
   }
 
   // Scenario: After unpinning pages {0, 1, 2, 3, 4} and pinning another 4 new pages,
   // there would still be one cache frame left for reading page 0.
+LOG_INFO("---------4----------");
   for (int i = 0; i < 5; ++i) {
     //解锁 0~4 ,并刷到磁盘中
-    //为啥要刷磁盘 , 为啥 is_dirty 设为 true
     EXPECT_EQ(true, bpm->UnpinPage(i, true));
     bpm->FlushPage(i);
   }
@@ -82,6 +85,7 @@ TEST(BufferPoolManagerTest, BinaryDataTest) {
     EXPECT_NE(nullptr, bpm->NewPage(&page_id_temp));
     bpm->UnpinPage(page_id_temp, false);
   }
+LOG_INFO("---------5----------");
   // Scenario: We should be able to fetch the data we wrote a while ago.
   //重新获取 page0到bufferpool中 , 可以看到之前写入磁盘的数据
   page0 = bpm->FetchPage(0);

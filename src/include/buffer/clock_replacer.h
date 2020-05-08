@@ -50,7 +50,7 @@ class ClockReplacer : public Replacer {
   int clockHand;
   int pageSize;
   std::vector<bool> inClock;
-  std::vector<bool> refFlag;
+  std::vector<bool> refBit;
   void forwardClockHand() ;
 };
 
