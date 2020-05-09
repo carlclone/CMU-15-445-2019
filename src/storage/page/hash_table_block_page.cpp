@@ -70,15 +70,15 @@ bool HASH_TABLE_BLOCK_TYPE::IsReadable(slot_offset_t bucket_ind) const {
     return readable_[bucket_ind / 8] & (1 << bucket_ind % 8);
 }
 
-    template <typename KeyType, typename ValueType, typename KeyComparator>
-    void HASH_TABLE_BLOCK_TYPE::SetAsReadable(slot_offset_t bucket_ind)  {
-        readable_[bucket_ind / 8] |= (1 << bucket_ind % 8);
-    }
+template <typename KeyType, typename ValueType, typename KeyComparator>
+void HASH_TABLE_BLOCK_TYPE::SetAsReadable(slot_offset_t bucket_ind)  {
+    readable_[bucket_ind / 8] |= (1 << bucket_ind % 8);
+}
 
-    template <typename KeyType, typename ValueType, typename KeyComparator>
-    void HASH_TABLE_BLOCK_TYPE::SetAsOccupied(slot_offset_t bucket_ind)  {
-        occupied_[bucket_ind / 8] |= (1 << bucket_ind % 8);
-    }
+template <typename KeyType, typename ValueType, typename KeyComparator>
+void HASH_TABLE_BLOCK_TYPE::SetAsOccupied(slot_offset_t bucket_ind)  {
+    occupied_[bucket_ind / 8] |= (1 << bucket_ind % 8);
+}
 
 
 // DO NOT REMOVE ANYTHING BELOW THIS LINE
