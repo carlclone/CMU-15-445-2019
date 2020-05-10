@@ -91,6 +91,7 @@ class LinearProbeHashTable : public HashTable<KeyType, ValueType, KeyComparator>
   page_id_t header_page_id_;
   BufferPoolManager *buffer_pool_manager_;
   KeyComparator comparator_;
+  HashTableHeaderPage *headerPage;
 
   // Readers includes inserts and removes, writer is only resize
   ReaderWriterLatch table_latch_;

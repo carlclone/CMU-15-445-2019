@@ -71,6 +71,11 @@ bool HASH_TABLE_BLOCK_TYPE::IsReadable(slot_offset_t bucket_ind) const {
 }
 
 template <typename KeyType, typename ValueType, typename KeyComparator>
+bool HASH_TABLE_BLOCK_TYPE::IsValid(slot_offset_t bucket_ind) const {
+  return IsOccupied(bucket_ind) && IsReadable(bucket_ind);
+}
+
+template <typename KeyType, typename ValueType, typename KeyComparator>
 void HASH_TABLE_BLOCK_TYPE::SetAsReadable(slot_offset_t bucket_ind)  {
     readable_[bucket_ind / 8] |= (1 << bucket_ind % 8);
 }
