@@ -32,7 +32,7 @@ ClockReplacer::~ClockReplacer() = default;
 // This should be the only method that updates the clock hand.
 bool ClockReplacer::Victim(frame_id_t *frame_id) {
   //从当前 clockhand 开始 sweep 1周
-  for (int i = 0; i <= 2*pageSize; i++) {
+  while (Size() != 0) {
     forwardClockHand();
     if (!inClock[clockHand]) {
       continue;
@@ -48,7 +48,6 @@ bool ClockReplacer::Victim(frame_id_t *frame_id) {
       refBit[clockHand] = false;
       return true;
     }
-
   }
   return false;
 }
