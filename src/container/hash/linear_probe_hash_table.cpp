@@ -35,6 +35,8 @@ HASH_TABLE_TYPE::LinearProbeHashTable(const std::string &name,
   //bucket 数(或者 block page 数)
   headerPage->SetSize(num_buckets);
   buffer_pool_manager->UnpinPage(header_page_id_, true);
+  //预先建立好 block pages
+
 }
 
 /*****************************************************************************
@@ -78,7 +80,13 @@ bool HASH_TABLE_TYPE::GetValue(Transaction *transaction, const KeyType &key, std
  *****************************************************************************/
 template <typename KeyType, typename ValueType, typename KeyComparator>
 bool HASH_TABLE_TYPE::Insert(Transaction *transaction, const KeyType &key, const ValueType &value) {
-  //从 header
+  //从 header 获取 metadata
+
+  //计算 key hash找到插入的 block page
+
+  //找到插入的 slot
+
+  //从该 slot 开始找到一个可以插入的 slot
 
   return false;
 }
@@ -88,6 +96,7 @@ bool HASH_TABLE_TYPE::Insert(Transaction *transaction, const KeyType &key, const
  *****************************************************************************/
 template <typename KeyType, typename ValueType, typename KeyComparator>
 bool HASH_TABLE_TYPE::Remove(Transaction *transaction, const KeyType &key, const ValueType &value) {
+  //类似 GetValue , 先找到 , 然后比对 Value 一致后删除
   return false;
 }
 
@@ -95,14 +104,18 @@ bool HASH_TABLE_TYPE::Remove(Transaction *transaction, const KeyType &key, const
  * RESIZE
  *****************************************************************************/
 template <typename KeyType, typename ValueType, typename KeyComparator>
-void HASH_TABLE_TYPE::Resize(size_t initial_size) {}
+void HASH_TABLE_TYPE::Resize(size_t initial_size) {
+  //创建新的 hashtable , 遍历所有 block page 和所有 slot , 重新执行 insert 到新的 hashtable
+  //记得删除旧的 header 和 blocks page
+  //然后更新该 hash table 的状态(属性)
+}
 
 /*****************************************************************************
  * GETSIZE
  *****************************************************************************/
 template <typename KeyType, typename ValueType, typename KeyComparator>
 size_t HASH_TABLE_TYPE::GetSize() {
-  return 0;
+  return headerPage->NumBlocks();
 }
 
 template class LinearProbeHashTable<int, int, IntComparator>;
