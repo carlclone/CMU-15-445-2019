@@ -11,6 +11,8 @@
 一个header page
 多个block page
 
+# 为什么每次都需要重新从 buffer pool 里 fetch headerPage , 而不能把 headerPage存到实例中
+
 # CPP相关
 
 ## 资料
@@ -54,4 +56,15 @@ TODO;加读/写锁
 ## CPP 如何检测某段代码的内存变化
 
 ## 测试reinterpret_cast后的实例值变化是否可以被多个线程看到
+reinterpret_cast是复制二进制到新地址,还是在原地址上进行解释?
 
+## 自己写测试
+
+
+跑完测试的参考
+https://github.com/jiangyuhang17/cmu_15-445/blob/630e3588c4b0f6654545c3dbca4cc4f440fd3bba/src/container/hash/linear_probe_hash_table.cpp
+
+其他参考
+https://github.com/search?p=2&q=HASH_TABLE_TYPE%3A%3ALinearProbeHashTable&type=Code
+https://github.com/tailuzhecom/GiantDB/blob/cd340b289c0750cc91c521e350b9ef7ae6430af3/bustub-master/src/container/hash/linear_probe_hash_table.cpp
+https://github.com/louisluSCU/CMU-15-445-Projects/blob/c719d713b73c4759646f420be97abd7b2febd192/src/container/hash/linear_probe_hash_table.cpp
