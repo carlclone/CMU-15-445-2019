@@ -34,9 +34,14 @@ HASH_TABLE_TYPE::LinearProbeHashTable(const std::string &name,
   headerPage->SetPageId(header_page_id_);
   //bucket 数(或者 block page 数)
   headerPage->SetSize(num_buckets);
-  buffer_pool_manager->UnpinPage(header_page_id_, true);
+
   //预先建立好 block pages
 
+}
+
+template <typename KeyType, typename ValueType, typename KeyComparator>
+LinearProbeHashTable<KeyType, ValueType, KeyComparator>::~LinearProbeHashTable() {
+  buffer_pool_manager_->UnpinPage(header_page_id_, true);
 }
 
 /*****************************************************************************

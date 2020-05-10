@@ -85,6 +85,7 @@ class LinearProbeHashTable : public HashTable<KeyType, ValueType, KeyComparator>
    * @return current size of the hash table
    */
   size_t GetSize();
+  virtual ~LinearProbeHashTable();
 
  private:
   // member variable
