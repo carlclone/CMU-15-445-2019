@@ -1,0 +1,28 @@
+
+Notes:
+
+1.volatile存储是byte-addressable , 可以直接跳到某个字节上 , non-volatile存储则是page/block addressable,需要把整个page读取到内存再定位到byte的offset, 再加上磁头的移动速度不快,因此要尽量减少随机IO
+2.一般的物理存储page都是4KB,操作系统的page也是4KB,数据库的page可以是4-16KB (不同层对数据页的抽象不同)
+3.使用取书的例子(从家里取,书房,城市图书馆,其他城市,其他国家的图书馆取)描述不同层级的存储的速度
+4.数据库的目标是隐藏从磁盘读取的延迟
+5.buffer pool的职责:管理page在内存和磁盘之间的置换 , 向其他部分提供获取的page一定在内存中的保证
+6.不使用OS的虚拟内存原因:虚拟内存并不知道你当前在使用哪些page,导致某个一直在使用的page在磁盘和内存中来回读写
+7.目前知道的page类型有,hash table header page , block page, table page, page可以用来存任何二进制数据
+8.单文件数据库的page id使用字节的offset
+9.>4KB的磁盘写不能保证原子性,数据库需要提供额外的保证,比如两阶段提交(在后面的章节)
+10.TableHeap,某个table的tuples的linked list
+11.tuple在page里的存放方式,slotted page, 从字节0开始存储每个tuple的offset , 从尾部字节向前存储字节的数据, 类似系统栈的设计 , 还额外存了tuple count
+12.tuple的结构:metadata,data,unique identifier (意味着一个tuple最大不能超过page大小,否则就要类似系统堆的设计,pointer指向大块数据和variable-length的数据) ,又会产生额外的磁盘读
+
+
+Slide:
+
+
+
+
+Subtle:
+
+
+
+
+Code:
