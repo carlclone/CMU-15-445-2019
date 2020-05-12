@@ -14,23 +14,34 @@
     - [ ] Executors
    
 
+# Homework
+- [ ] SQL
+- [ ] Indexes
+- [ ] Join Algorithms
+- [ ] Concurrency Control
+- [ ] Distributed Databases
 
-# Summary
+# 笔记
 
+[DB Storage](https://github.com/carlclone/CMU-15-445-2019/blob/master/notes/1.db-storage.md)
 [Buffer Pool Manager / Lab1]()
 [Hash Table / Lab2]()
 [Tree Index / 2018 Lab2]()
 [Multiple Version Concurrency Control]()
 
+
+
 # 资料
 
-Video
-Schedule
+课程 schedule
+英文字幕
+中文字幕 
 
 # 课程提到的书籍
 
-数据库系统实现 第六版
-B Tree Modern Technique
+Database System Concepts 6e
+Modern BTree Technique
+A tour of C++
 
 # end
 
