@@ -184,6 +184,41 @@ void HASH_TABLE_TYPE::Resize(size_t initial_size) {
   //创建新的 hashtable , 遍历所有 block page 和所有 slot , 重新执行 insert 到新的 hashtable
   //记得删除旧的 header 和 blocks page
   //然后更新该 hash table 的状态(属性)
+  auto headerPage = reinterpret_cast<HashTableHeaderPage * >(buffer_pool_manager_->FetchPage(header_page_id_)->GetData());
+
+        //新的 block pages
+        page_id_t  tmpPageId;
+        for (unsigned i = 0; i < headerPage->GetSize(); i++) {
+            //new page
+            buffer_pool_manager_->NewPage(&tmpPageId);
+            //存储到 header 的 block page id 中
+            headerPage->AddBlockPageId(tmpPageId);
+            //un pin
+            buffer_pool_manager_->UnpinPage(tmpPageId, true);
+        }
+
+        auto oldSize = headerPage->GetSize();
+
+        headerPage->SetSize(initial_size);
+
+        //遍历所有page,所有slot,hash到新的位置 , 可以复用Insert方法
+        for (size_t i=0;i<oldSize;i++) {
+            size_t oldBlockPageId = headerPage->GetBlockPageId(i);
+            auto blockPage = reinterpret_cast<HASH_TABLE_BLOCK_TYPE *> (buffer_pool_manager_->FetchPage(oldBlockPageId)->GetData());
+
+            //遍历page的所有slot
+            for (size_t j=0;j<BLOCK_ARRAY_SIZE;j++) {
+                if (blockPage->IsReadable(i)) {
+                    auto val = blockPage->ValueAt(i);
+                    auto key = blockPage->KeyAt(i);
+                    Insert(nullptr,key,val);
+                }
+            }
+
+            buffer_pool_manager_->UnpinPage(oldBlockPageId,false);
+            buffer_pool_manager_->DeletePage(oldBlockPageId);
+        }
+        buffer_pool_manager_->UnpinPage(header_page_id_,true);
 }
 
 /*****************************************************************************
