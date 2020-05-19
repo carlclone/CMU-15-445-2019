@@ -44,7 +44,7 @@ namespace bustub {
         if (page_table_.find(page_id) != page_table_.end()) {
             replaceFrameId = page_table_[page_id];
             replacementPage = &pages_[replaceFrameId];
-            LOG_INFO("page已经在pool中,直接返回 page %d frame %d",page_id,replaceFrameId);
+//            LOG_INFO("page已经在pool中,直接返回 page %d frame %d",page_id,replaceFrameId);
         }
 
             // 1.2    If P does not exist, find a replacement page (R) from either the free list or the replacer.
@@ -54,17 +54,17 @@ namespace bustub {
                 replaceFrameId = free_list_.front();
                 free_list_.pop_front();
                 replacementPage = &pages_[replaceFrameId];
-                LOG_INFO("fetchpage free list中找了frame %d",replaceFrameId);
+//                LOG_INFO("fetchpage free list中找了frame %d",replaceFrameId);
             } else {
                 // find a replacement page (R) from  the replacer.
                 auto success = replacer_->Victim(&replaceFrameId);
                 if (success) {
                     replacementPage = &pages_[replaceFrameId];
-                    LOG_INFO("fetchpage replacer中找了frame %d",replaceFrameId);
+//                    LOG_INFO("fetchpage replacer中找了frame %d",replaceFrameId);
 
                 } else {
                     replacementPage = nullptr;
-                    LOG_INFO("fetchpage replacer中找不到frame ");
+//                    LOG_INFO("fetchpage replacer中找不到frame ");
                 }
             }
         }
@@ -86,7 +86,7 @@ namespace bustub {
         replacementPage->pin_count_++;
         disk_manager_->ReadPage(page_id, replacementPage->data_);
         page_table_[page_id] = replaceFrameId;
-        LOG_INFO("从disk中获取了%d 数据%s",page_id,replacementPage->data_);
+//        LOG_INFO("从disk中获取了%d 数据%s",page_id,replacementPage->data_);
 
         return replacementPage;
     }
@@ -119,7 +119,7 @@ namespace bustub {
             replacer_->Unpin(frameId);
         }
 
-        LOG_INFO("unpin了page %d frame %d",page_id,frameId);
+//        LOG_INFO("unpin了page %d frame %d",page_id,frameId);
 
         return true;
     }
@@ -128,12 +128,12 @@ namespace bustub {
         // Make sure you call DiskManager::WritePage!
 
         if (page_table_.find(page_id) == page_table_.end()) {
-            LOG_INFO("flush page 找不到");
+//            LOG_INFO("flush page 找不到");
             return false;
         }
         Page *page = &pages_[page_table_[page_id]];
         if (page->IsDirty()) {
-            LOG_INFO("flush page 写入page %d",page_id);
+//            LOG_INFO("flush page 写入page %d",page_id);
             disk_manager_->WritePage(page_id, page->GetData());
             page->is_dirty_=false;
             return true;
@@ -161,7 +161,7 @@ namespace bustub {
             replacementPageFrameId = free_list_.front();
             free_list_.pop_front();
             replacementPage = &pages_[replacementPageFrameId];
-            LOG_INFO("从freelist中找到可用的frame");
+//            LOG_INFO("从freelist中找到可用的frame");
         }
 
             // find a replacement page (R) from  the replacer.
@@ -169,10 +169,10 @@ namespace bustub {
             auto result = replacer_->Victim(&replacementPageFrameId);
             //一个空闲frame都找不到了
             if (result == false) {
-                LOG_INFO("没有空闲frame了");
+//                LOG_INFO("没有空闲frame了");
                 return nullptr;
             }
-            LOG_INFO("从replacer中找到可用frame %d",replacementPageFrameId);
+//            LOG_INFO("从replacer中找到可用frame %d",replacementPageFrameId);
             replacementPage = &pages_[replacementPageFrameId];
 
         }
@@ -194,7 +194,7 @@ namespace bustub {
         page_table_[newPageId] = replacementPageFrameId;
 
         //返回响应
-        LOG_INFO("创建了一个新 page %d frame %d", *page_id,replacementPageFrameId);
+//        LOG_INFO("创建了一个新 page %d frame %d", *page_id,replacementPageFrameId);
         *page_id = newPageId;
         return replacementPage;
     }

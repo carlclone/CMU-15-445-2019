@@ -25,8 +25,10 @@ TEST(HashTableTest, SampleTest) {
   auto *disk_manager = new DiskManager("test.db");
   auto *bpm = new BufferPoolManager(50, disk_manager);
 
+  //大小为1000个page的table
   LinearProbeHashTable<int, int, IntComparator> ht("blah", bpm, IntComparator(), 1000, HashFunction<int>());
 
+  LOG_INFO("遍历插入5个元素");
   // insert a few values
   for (int i = 0; i < 5; i++) {
     ht.Insert(nullptr, i, i);
@@ -36,6 +38,8 @@ TEST(HashTableTest, SampleTest) {
     EXPECT_EQ(i, res[0]);
   }
 
+
+  LOG_INFO("查5个元素");
   // check if the inserted values are all there
   for (int i = 0; i < 5; i++) {
     std::vector<int> res;
@@ -44,6 +48,7 @@ TEST(HashTableTest, SampleTest) {
     EXPECT_EQ(i, res[0]);
   }
 
+  LOG_INFO("每个元素插入key相同value不同的值");
   // insert one more value for each key
   for (int i = 0; i < 5; i++) {
     if (i == 0) {

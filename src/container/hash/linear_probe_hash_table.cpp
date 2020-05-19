@@ -33,13 +33,15 @@ HASH_TABLE_TYPE::LinearProbeHashTable(const std::string &name,
   Page *newPage = buffer_pool_manager_->NewPage(&header_page_id_);
   auto headerPage = reinterpret_cast<HashTableHeaderPage *>(newPage->GetData());
   headerPage->SetPageId(header_page_id_);
+
   //bucket 数(或者 block page 数)
   headerPage->SetSize(num_buckets);
+
   //预先建立好 block pages
   page_id_t  tmpPageId;
   for (unsigned i = 0; i < num_buckets; i++) {
     //new page
-    Page *tmpPage = buffer_pool_manager->NewPage(&tmpPageId);
+    buffer_pool_manager->NewPage(&tmpPageId);
     //存储到 header 的 block page id 中
     headerPage->AddBlockPageId(tmpPageId);
     //un pin
@@ -64,7 +66,7 @@ bool HASH_TABLE_TYPE::GetValue(Transaction *transaction, const KeyType &key, std
   Page *hPage = buffer_pool_manager_->FetchPage(header_page_id_);
   HashTableHeaderPage *headerPage = reinterpret_cast<HashTableHeaderPage *>(hPage->GetData());
   //从header page获取 metadata
-  auto tailIndex = headerPage->NumBlocks() -1;
+//  auto tailIndex = headerPage->NumBlocks() -1;
   auto mmHash = hash_fn_.GetHash(key);
   auto targetBlockIndex = mmHash / BLOCK_ARRAY_SIZE;
 
@@ -77,7 +79,7 @@ bool HASH_TABLE_TYPE::GetValue(Transaction *transaction, const KeyType &key, std
 
   //定位 slot
   auto res=false;
-  auto targetSlotIndex = mmHash % BLOCK_ARRAY_SIZE;
+  auto targetSlotIndex = mmHash % headerPage->GetSize();
 
   //从该 slot 位置开始找
   for (auto i = targetSlotIndex; i < BLOCK_ARRAY_SIZE; i++) {
@@ -106,7 +108,7 @@ bool HASH_TABLE_TYPE::Insert(Transaction *transaction, const KeyType &key, const
 
   //计算 key hash找到插入的 block page
   auto mmHash = hash_fn_.GetHash(key);
-  auto targetBlockIndex = mmHash / BLOCK_ARRAY_SIZE;
+  auto targetBlockIndex = mmHash & headerPage->GetSize();
 
   //获取 bock
   auto blockPageId = headerPage->GetBlockPageId(targetBlockIndex);
