@@ -4,11 +4,11 @@
 - [x] Lab1
     - [x] Clock replacer
     - [x] Buffer pool manager
-- [ ] Lab2
+- [x] Lab2
     - [x] Hashtable header page
     - [x] Hashtable block page
-    - [ ] Hashtable linear probe
-    - [ ] Hashtable resize
+    - [x] Hashtable linear probe
+    - [x] Hashtable resize
 - [ ] Lab3
     - [ ] Simple catalog
     - [ ] Executors
