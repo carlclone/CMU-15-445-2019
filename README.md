@@ -9,15 +9,18 @@
     - [x] Hashtable block page
     - [x] Hashtable linear probe
     - [x] Hashtable resize
-- [ ] Lab3
-    - [ ] Simple catalog
-    - [ ] Executors
-   
+- [x] Lab3
+    - [x] Simple catalog
+    - [x] Executors
+- [ ] Lab4
+    - [ ] Log Manager
+    - [ ] System Recovery
+    - [ ] Checkpoints
 
 # Homework
-- [ ] SQL
-- [ ] Indexes
-- [ ] Join Algorithms
+- [x] SQL
+- [x] Indexes
+- [x] Join Algorithms
 - [ ] Concurrency Control
 - [ ] Distributed Databases
 
