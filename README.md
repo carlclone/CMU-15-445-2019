@@ -24,6 +24,53 @@
 - [ ] Concurrency Control
 - [ ] Distributed Databases
 
+# simple catalog
+
+static_cast<std::unique_ptr<TableMetadata>>(table)
+
+图:
++-------------------------------------------------------------------+
+| explanation:
+| tuple : like a int or char field  ,binary data of a field
+| record : one row of table                                         +
+|                                                                   |
+|  /**                                                              |
+|   * Tuple format:                                                 |
+|   * ------------------------------------+-------------------------+------                                           src/storage/table/table_heap.cpp
+|   * | FIXED|SIZE or VARIED|SIZED OFFSET | PAYLOAD OF VARIED|SIZED FIELD |
+|   * ------------------------------------+-------------------------+------
+|   */                                                              |
++------------------------------------------+------------------------+-----------------------------------------+    +-----------------------------------------------+       +---------------------------------------------------+
+                                           | +--------------------+                                 catalog   |    |tableHeap                                      |       |  tableMetaData                                    |
+                                           | |tables              |      +------------+                       |    |   represent a physical table on disk          |       |   - schema                                        |
+                                           | |  +--------------+  |      | names      |      +---------+---+  |    |   linked list of pages                        |       |   | name                                          |
+                                           | |  |metadata      |  |      |            |      |table id -   |  |    |   job to operate the table record             |       |   | ptr to tableheap                              |
+                                           | |  |  -tableheap  +<--------+  -table1   |      |generator    |  |    |                                               |       |   - table obj id                                  |
+                                           | |  |              |  |      |  -table2   |      |             |  |    |                                               |       |                                                   |
+                                           | |  |              |  |      |            |      |             |  |    |                                               |       |                                                   |
+                                           | |  |              |  |      |            |      +-------------+  |    |                                               |       |                                                   |
+                                           | |  |              |  |      |            |                       |    |                                               |       |                                                   |
+                                           | |  +--------------+  |      |            |                       |    |   - first page ( in physical disk) , retrie   |       |                                                   |
+                                           | |                    |      |            |                       |    |   ve from bpm                                 |       |                                                   |
+                                           | |                    |      |            |                       |    |                                               |       |                                                   |
+                                           | |                    |      |            |                       |    |   InsertTuple(tuple)                          |       |                                                   |
+                                           | |                    |      +------------+                       |    |                                               |       |                                                   |
+                                           | |                    |                                           |    |   MarkDelete(record id)                       |       |                                                   |
+                                           | |                    |                                           |    |                                               |       |                                                   |
+                                           | |                    |                                           |    |   UpdateTuple(tuple)                          |       |                                                   |
+                                           | |                    |                                           |    |                                               |       |                                                   |
+                                           | |                    |                                           |    |                                               |       |                                                   |
+                                           | |                    |                                           |    |                                               |       |                                                   |
+                                           | |                    |                                           |    |                                               |       |                                                   |
+                                           | |                    |                                           |    |                                               |       |                                                   |
+                                           | |                    |                                           |    +-----------------------------------------------+       |                                                   |
+                                           | |                    |                                           |                                                            |                                                   |
+                                           | |                    |                                           |                                                            |                                                   |
+                                           | |                    |                                           |                                                            +---------------------------------------------------+
+                                           | +--------------------+                                           |
+                                           +------------------------------------------------------------------+
+
+
 # 笔记
 
 [DB Storage](https://github.com/carlclone/CMU-15-445-2019/blob/master/notes/1.db-storage.md)
